@@ -18,6 +18,17 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Setup Swap Space
+        run: |
+          echo "Configuring 12GB swap space to avoid OOM during kernel link..."
+          sudo swapoff -a || true
+          sudo rm -f /swapfile || true
+          sudo fallocate -l 12G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=12288
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          free -h
+
       - name: Install System Build Dependencies
         run: |
           sudo apt-get update
@@ -45,6 +56,7 @@ jobs:
           chmod +x kernel/build/_setup_env.sh
           export HERMETIC_TOOLCHAIN=0
           export BUILDTOOLS_PREBUILT_BIN=""
+          export LTO=thin
           export SOURCE_DATE_EPOCH=$(date +%s)
           ./build_kernel.sh
 

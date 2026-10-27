@@ -11,6 +11,7 @@ export OUT_DIR="../out/target/product/a07/obj/KERNEL_OBJ"
 export DIST_DIR="../out/target/product/a07/obj/KERNEL_OBJ"
 export BUILD_CONFIG="../out/target/product/a07/obj/KERNEL_OBJ/build.config"
 export BUILDTOOLS_PREBUILT_BIN=""
+export LTO="${LTO:-thin}"
 
 cd ../kernel
 ./build/build.sh
