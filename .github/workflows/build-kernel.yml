@@ -44,6 +44,7 @@ jobs:
           chmod +x kernel/build/build.sh
           chmod +x kernel/build/_setup_env.sh
           export HERMETIC_TOOLCHAIN=0
+          export BUILDTOOLS_PREBUILT_BIN=""
           export SOURCE_DATE_EPOCH=$(date +%s)
           ./build_kernel.sh
 

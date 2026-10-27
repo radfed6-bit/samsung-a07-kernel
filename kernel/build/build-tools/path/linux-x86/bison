@@ -1,7 +1,12 @@
 #!/bin/sh
 
 base=$(readlink -f $(dirname $0))
-export BISON_PKGDATADIR=$(readlink -f ${base}/../../../../prebuilts/build-tools/common/bison)
-export M4=${base}/m4
-
-${base}/../../../../prebuilts/build-tools/linux-x86/bin/bison $*
+if [ -x "${base}/../../../../prebuilts/build-tools/linux-x86/bin/bison" ]; then
+  export BISON_PKGDATADIR=$(readlink -f ${base}/../../../../prebuilts/build-tools/common/bison)
+  export M4=${base}/m4
+  exec "${base}/../../../../prebuilts/build-tools/linux-x86/bin/bison" "$@"
+elif command -v bison >/dev/null 2>&1; then
+  exec bison "$@"
+else
+  exec /usr/bin/bison "$@"
+fi

@@ -114,6 +114,7 @@ chmod +x build_kernel.sh kernel/build/build.sh kernel/build/_setup_env.sh
 
 # Export non-hermetic toolchain and timestamp configuration
 export HERMETIC_TOOLCHAIN=0
+export BUILDTOOLS_PREBUILT_BIN=""
 export SOURCE_DATE_EPOCH=$(date +%s)
 
 # Start build process

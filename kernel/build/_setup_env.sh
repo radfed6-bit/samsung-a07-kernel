@@ -129,6 +129,10 @@ if [ "${HERMETIC_TOOLCHAIN:-0}" -eq 1 ]; then
   export HOSTLDFLAGS="$sysroot_flags $ldflags"
 fi
 
+if [ "${HERMETIC_TOOLCHAIN:-0}" -eq 0 ]; then
+  BUILDTOOLS_PREBUILT_BIN=""
+fi
+
 for PREBUILT_BIN in "${PREBUILTS_PATHS[@]}"; do
     PREBUILT_BIN=\${${PREBUILT_BIN}}
     eval PREBUILT_BIN="${PREBUILT_BIN}"

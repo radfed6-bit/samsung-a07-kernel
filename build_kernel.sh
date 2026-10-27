@@ -10,6 +10,7 @@ export CROSS_COMPILE_COMPAT="arm-linux-gnueabi-"
 export OUT_DIR="../out/target/product/a07/obj/KERNEL_OBJ"
 export DIST_DIR="../out/target/product/a07/obj/KERNEL_OBJ"
 export BUILD_CONFIG="../out/target/product/a07/obj/KERNEL_OBJ/build.config"
+export BUILDTOOLS_PREBUILT_BIN=""
 
 cd ../kernel
 ./build/build.sh
