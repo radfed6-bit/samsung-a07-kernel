@@ -1,0 +1,60 @@
+name: Build Samsung Galaxy A07 Kernel
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-kernel:
+    name: Build Kernel Image and Modules
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout Source Tree
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install System Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            bc bison build-essential ccache curl flex git \
+            libelf-dev libncurses5-dev libssl-dev lz4 \
+            python3 python-is-python3 rsync \
+            gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi \
+            device-tree-compiler clang lld llvm
+
+      - name: Download and Extract Android Clang Toolchain (clang-r416183b)
+        run: |
+          mkdir -p prebuilts-master/clang/host/linux-x86/clang-r416183b
+          echo "Downloading Android Clang r416183b from Google Gitiles archive..."
+          curl -fsSL "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r416183b.tar.gz" | tar -xz -C prebuilts-master/clang/host/linux-x86/clang-r416183b
+          # Symlink prebuilts into kernel/ directory for build.sh resolution
+          ln -sfn ../prebuilts-master kernel/prebuilts-master
+          echo "Toolchain Clang version:"
+          ./prebuilts-master/clang/host/linux-x86/clang-r416183b/bin/clang --version
+
+      - name: Compile Kernel
+        run: |
+          chmod +x build_kernel.sh
+          chmod +x kernel/build/build.sh
+          chmod +x kernel/build/_setup_env.sh
+          export HERMETIC_TOOLCHAIN=0
+          export SOURCE_DATE_EPOCH=$(date +%s)
+          ./build_kernel.sh
+
+      - name: Upload Kernel Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: samsung-a07-kernel-build
+          path: |
+            out/target/product/a07/obj/KERNEL_OBJ/kernel-5.10/arch/arm64/boot/Image*
+            out/target/product/a07/obj/KERNEL_OBJ/*.ko
+            out/target/product/a07/obj/KERNEL_OBJ/build.config*
+            out/target/product/a07/obj/KERNEL_OBJ/include/config/auto.conf
+          if-no-files-found: warn
