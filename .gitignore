@@ -1,0 +1,22 @@
+# Compressed release archives (exceed GitHub 100MB limit)
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+Kernel.tar.gz
+Platform.tar.gz
+
+# Toolchain prebuilts downloaded in CI
+prebuilts-master/
+kernel/prebuilts-master
+
+# Kernel build output directory
+out/
+
+# Agent metadata and working notes
+.agents/
+
+# Temporary and editor files
+*.swp
+*~
+.vscode/
+.idea/
