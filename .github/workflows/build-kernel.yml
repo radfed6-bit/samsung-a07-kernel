@@ -32,21 +32,11 @@ jobs:
         run: |
           mkdir -p prebuilts-master/clang/host/linux-x86/clang-r416183b
           echo "Downloading Android Clang r416183b from Google Gitiles archive..."
-          curl -fsSL "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r416183b.tar.gz" | tar -xz -C prebuilts-master/clang/host/linux-x86/clang-r416183b
+          curl -fsSL --retry 3 --retry-delay 5 "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r416183b.tar.gz" | tar -xz -C prebuilts-master/clang/host/linux-x86/clang-r416183b
           # Symlink prebuilts into kernel/ directory for build.sh resolution
           ln -sfn ../prebuilts-master kernel/prebuilts-master
           echo "Toolchain Clang version:"
           ./prebuilts-master/clang/host/linux-x86/clang-r416183b/bin/clang --version
-
-      - name: Setup Host Build Tools Fallback
-        run: |
-          mkdir -p prebuilts/build-tools/linux-x86/bin
-          for tool in bison flex m4 make depmod dtc; do
-            if which $tool >/dev/null 2>&1; then
-              ln -sf $(which $tool) prebuilts/build-tools/linux-x86/bin/$tool
-            fi
-          done
-          ln -sfn ../prebuilts kernel/prebuilts
 
       - name: Compile Kernel
         run: |

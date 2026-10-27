@@ -1,12 +1,29 @@
 #!/bin/sh
 
 base=$(readlink -f $(dirname $0))
-if [ -x "${base}/../../../../prebuilts/build-tools/linux-x86/bin/bison" ]; then
-  export BISON_PKGDATADIR=$(readlink -f ${base}/../../../../prebuilts/build-tools/common/bison)
-  export M4=${base}/m4
-  exec "${base}/../../../../prebuilts/build-tools/linux-x86/bin/bison" "$@"
-elif command -v bison >/dev/null 2>&1; then
-  exec bison "$@"
-else
+prebuilt_bison="${base}/../../../../prebuilts/build-tools/linux-x86/bin/bison"
+prebuilt_pkgdata="${base}/../../../../prebuilts/build-tools/common/bison"
+
+if [ -x "${prebuilt_bison}" ] && [ -d "${prebuilt_pkgdata}" ]; then
+  export BISON_PKGDATADIR=$(readlink -f "${prebuilt_pkgdata}")
+  if [ -x "${base}/m4" ]; then
+    export M4="${base}/m4"
+  fi
+  exec "${prebuilt_bison}" "$@"
+fi
+
+# Fallback to host bison:
+unset BISON_PKGDATADIR
+unset M4
+
+# Filter out this wrapper script from PATH lookup to prevent infinite self-recursion
+host_bison=$(which -a bison 2>/dev/null | grep -Fxv "${base}/bison" | head -n 1)
+
+if [ -n "${host_bison}" ] && [ -x "${host_bison}" ]; then
+  exec "${host_bison}" "$@"
+elif [ -x /usr/bin/bison ]; then
   exec /usr/bin/bison "$@"
+else
+  echo "bison: no host bison found" >&2
+  exit 127
 fi
