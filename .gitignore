@@ -6,6 +6,8 @@ Kernel.tar.gz
 Platform.tar.gz
 
 # Toolchain prebuilts downloaded in CI
+prebuilts/
+kernel/prebuilts
 prebuilts-master/
 kernel/prebuilts-master
 
